@@ -5,9 +5,16 @@
   		<%= stylesheet_link_tag    "application", :media => "all" %>
   		<%= javascript_include_tag "application" %>
   		<%= csrf_meta_tags %>
+  		<!-- 调用相应的局部视图 -->
+  		<%= render 'layouts/shim'%>
 	</head>
 	
 	<body>
-		<%= yield %>
+	  <%= render 'layouts/header' %>
+	  <div class = "container">
+	  	<!-- 调用相应视图的内容 -->
+	  	<%= yield %>
+	  	<%= render 'layouts/footer'%>
+	  </div>
 	</body>
 </html>
