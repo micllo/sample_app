@@ -5,7 +5,7 @@ require 'spec_helper'
 # 测试链接是否指向正确的页面
 
 describe "Static pages" do	
-	# ‘it’代码块中会调用的page验证方法
+	# 将page设置为默认的测试对象 -- ‘it’代码块会默认调用它
 	subject { page }
 
 	# 将所有相同的验证方法存放入共享模块中
@@ -15,14 +15,14 @@ describe "Static pages" do
 	end
 
 	describe "Home page" do
-		# ‘it’代码块中会调用的访问路径（针对路由设置的测试）
+		# 会先于it执行，‘it’代码块会默认调用它（针对路由设置的测试）
 		before { visit root_path }
 
 		# 设置共享模块中参数的Hash值
 		let(:header) { 'Welcomg to the Sample' }
 		let(:page_title) { '' }
 
-		# 调用共享模块中的验证方法
+		# 调用共享模块中的验证方法（ 一个 it 代表一个 测试用例 ）
 		it_should_behave_like "all_static_pages"
 
 		# 验证title标记中的内容是否没有出现‘| Home’
