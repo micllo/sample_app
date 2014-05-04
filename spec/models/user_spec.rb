@@ -2,14 +2,13 @@
 #
 # Table name: users
 #
-#  id         :integer          not null, primary key
-#  name       :string(255)
-#  email      :string(255)
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id              :integer          not null, primary key
+#  name            :string(255)
+#  email           :string(255)
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  password_digest :string(255)
 #
-
-require 'spec_helper'
 
 # 测试数据模型
 # 存在性验证（属性赋值后是否存在）【表单层】
@@ -27,7 +26,7 @@ require 'spec_helper'
 # 方法：获取用户提交的密码，进行加密，再和数据库中存储的加密密码对比
 # 注意：数据库中添加的’password_digest‘字段，就代替了‘password’和‘password_confirmation’这两个字段
 
-
+require 'spec_helper'
 
 describe User do
 	# 先于it执行

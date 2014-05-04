@@ -6,16 +6,28 @@
   		<%= stylesheet_link_tag    "application", :media => "all" %>
   		<%= javascript_include_tag "application" %>
   		<%= csrf_meta_tags %>
+
   		<!-- 调用相应的局部视图 -->
   		<%= render 'layouts/shim'%>
 	</head>
 	
 	<body>
 	  <%= render 'layouts/header' %>
+
 	  <div class = "container">
-	  	<!-- 调用相应视图的内容 -->
-	  	<%= yield %>
-	  	<%= render 'layouts/footer'%>
+
+	  	  <!-- 显示flash中保存的消息 -->
+	  	  <% flash.each do |key, value| %>
+	  	  	 <div class = "alert alert-<%= key %>"> <%= value %> </div>
+	  	  <% end %>
+
+	  	  <!-- 调用相应视图的内容 -->
+	  	  <%= yield %>
+
+	  	  <%= render 'layouts/footer'%>
+
+	  	  <!-- 只在开发环境的页面中显示rails自带的debug调试信息 -->
+	  	  <%= debug(params) if Rails.env.development? %>
 	  </div>
 	</body>
 </html>

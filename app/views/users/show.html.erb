@@ -1,0 +1,15 @@
+<!-- 定义了一个title变量 -->
+<% provide(:title, @user.name) %>
+
+<div class = "row">
+	<aside class = "span4">
+		<section>
+			<h1>
+			<!-- 显示用户的Gravatar头像
+			（在apps/helpers/users_helper.rb中） -->
+			<%= gravatar_for(@user) %>
+			<%= @user.name %>
+			</h1>
+		</section>
+	</aside>
+</div>

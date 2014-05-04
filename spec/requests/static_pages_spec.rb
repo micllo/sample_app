@@ -1,8 +1,10 @@
-require 'spec_helper'
 
 # 测试路由设置
 # 测试相应标记中文本的验证
 # 测试链接是否指向正确的页面
+
+
+require 'spec_helper'
 
 describe "Static pages" do	
 	# 将page设置为默认的测试对象 -- ‘it’代码块会默认调用它

@@ -2,11 +2,12 @@
 #
 # Table name: users
 #
-#  id         :integer          not null, primary key
-#  name       :string(255)
-#  email      :string(255)
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id              :integer          not null, primary key
+#  name            :string(255)
+#  email           :string(255)
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  password_digest :string(255)
 #
 
 class User < ActiveRecord::Base
@@ -18,6 +19,7 @@ class User < ActiveRecord::Base
 
   # 在email存入数据库之前，把email转换成小写
   before_save { |user| user.email = email.downcase }
+  #before_save { self.email.downcase! }
 
   # 验证name：不能缺省、长度限制50
   validates :name, presence: true, length: { maximum: 50 }

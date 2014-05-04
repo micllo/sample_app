@@ -18,9 +18,7 @@ ActiveRecord::Schema.define(:version => 20140502001149) do
     t.string   "email"
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false
-    
-    # 该加密密码字段（取代了‘password’和‘password_confirmation’这两个字段）
-    t.string   "password_digest"  
+    t.string   "password_digest"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

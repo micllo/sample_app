@@ -1,4 +1,14 @@
 SampleApp::Application.configure do
+
+  # speed up tests by lowering BCrypt's cost function
+  # 重新设置BCrypt耗时因子，来加速test的过程
+  require 'bcrypt'
+  silence_warnings do
+    # 将耗时因子的默认值设为最小
+    BCrypt::Engine::DEFAULT_COST = BCrypt::Engine::MIN_COST
+  end
+
+
   # Settings specified here will take precedence over those in config/application.rb
 
   # The test environment is used exclusively to run your application's
