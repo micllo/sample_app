@@ -18,7 +18,8 @@
 
 	  	  <!-- 显示flash中保存的消息 -->
 	  	  <% flash.each do |key, value| %>
-	  	  	 <div class = "alert alert-<%= key %>"> <%= value %> </div>
+	  	  	 <!--<div class = "alert alert-<%= key %>"> <%= value %> </div>-->
+	  	  	 <%= content_tag(:div, value, class: "alert alert-#{key}") %>
 	  	  <% end %>
 
 	  	  <!-- 调用相应视图的内容 -->
@@ -31,3 +32,5 @@
 	  </div>
 	</body>
 </html>
+
+

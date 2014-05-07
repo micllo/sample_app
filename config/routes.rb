@@ -2,17 +2,24 @@ SampleApp::Application.routes.draw do
   
   resources :users
 
+  resources :sessions, only: [:new, :create, :destroy]
+
   get "users/new"
 
-  root to: 'static_pages#home'
+  root to: 'static_pages#home' # 匹配的具名路由是'root_path'
 
-  match '/signup', to: 'users#new'
-  
-  match '/help', to: 'static_pages#help'
+  match '/help', to: 'static_pages#help'  # 匹配的具名路由是’help_path‘
 
   match '/about', to: 'static_pages#about'
 
   match '/contact', to: 'static_pages#contact'
+
+  match '/signup', to: 'users#new'  # 用'signup_path'代替了'new_user_path'
+
+  match '/signin', to: 'sessions#new' # 用'signin_path'代替了'new_session_path'
+
+  match '/signout', to:'sessions#destroy', via: :delete    # 'via'指明该动作使用DELETE请求
+
 
 
   # The priority is based upon order of creation:

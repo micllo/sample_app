@@ -1,20 +1,14 @@
 <% if @user.errors.any? %>
-
 	<div id = "error_explanation">
-
 		<div class = "alert alert-error">
-
 			<!-- 'pluralize'第一个参数设置错误的数量，第二个参数设置需要显示的文字
 			 该脚本会根据第一个参数的数量，来正确显示第二个参数的单复数形式 -->
 			The form contains <%= pluralize(@user.errors.count, "error") %>
-
 		</div>	
 
 		<ul>
 			<% @user.errors.full_messages.each do |msg| %>
-
 				<li>* <%= msg %></li>
-
 			<% end %>
 		</ul>
 	</div>

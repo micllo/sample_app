@@ -8,9 +8,11 @@ gem 'jquery-rails', '2.0.2'
 # 在自定义的CSS中，使用 @import "Bootstrap"; 来导入 
 gem 'bootstrap-sass', '2.0.4'  
 
-#使用Hash函数bcrypt对密码进行不可逆的加密，来得到密码的Hash值
+# 使用Hash函数bcrypt对密码进行不可逆的加密，来得到密码的Hash值
 gem 'bcrypt-ruby', '3.0.1'  
 
+# 可提供自动处理数据库迁移等操作（如果把Heroku当做实际生产环境）
+gem 'kumade'
 
 group :development, :test do
 	gem 'sqlite3', '1.3.5'       # 'sqlite3'数据库
@@ -37,6 +39,10 @@ group :test do
 	# ’Capybara‘允许使用类似英语中的句法来编写模拟与应用程序交互的代码（如：it语句、visit语句）
 	# 与’RSpec‘测试套件一起使用的gem
 	gem 'capybara', '1.1.2'    
+
+	# 'Cucumber'支持行为驱动开发的自动化测试工具
+	gem 'cucumber-rails', '1.2.1', require: false
+	gem 'database_cleaner', '0.7.0'
 
 	# 下面两个gem都是基于’guard‘测试套件所需的gem
 	gem 'rb-fsevent', '0.9.1', :require => false 

@@ -2,4 +2,9 @@
 # See https://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
-  hello: "Hello world"
+  # 对应’models/user.rb‘中的结构
+  activerecord:
+   attributes:
+    user:
+     password_digest: "Password"
+     # 使注册页面的报错提示信息中，将“Password_digest”改成“Password”

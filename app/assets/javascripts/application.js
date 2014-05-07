@@ -13,3 +13,6 @@
 //= require jquery
 //= require jquery_ujs
 //= require_tree .
+
+# "导入后，可以实现下拉菜单的样式了"
+//= require bootstrap     

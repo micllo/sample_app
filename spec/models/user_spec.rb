@@ -8,6 +8,7 @@
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  password_digest :string(255)
+#  remember_token  :string(255)
 #
 
 # 测试数据模型
@@ -23,8 +24,15 @@
 
 # 用户身份验证：【数据层】
 # 目的：就是为了规避安全隐患，因为数据库中存入的密码是经过加密处理的（使得任何人都无法识别）
-# 方法：获取用户提交的密码，进行加密，再和数据库中存储的加密密码对比
+# 方法：调用'has_secure_password'中的'authenticate'方法，传入用户提交的密码作为参数，
+#      先进行加密处理，然后再将其与数据库中存储的加密密码进行对比
 # 注意：数据库中添加的’password_digest‘字段，就代替了‘password’和‘password_confirmation’这两个字段
+
+# 验证合法的非空记忆权标
+
+
+
+
 
 require 'spec_helper'
 
@@ -40,12 +48,14 @@ describe User do
 	# 将@user设置为默认的测试对象
 	subject { @user }
 
-	# 验证 user 数据模型中是否存在该字段（存在性验证）
+	# 验证 user 数据模型中是否存在这些属性（存在性验证）
 	it { should respond_to(:name) }
 	it { should respond_to(:email) }
 	it { should respond_to(:password_digest) }
 	it { should respond_to(:password) }
 	it { should respond_to(:password_confirmation) }
+	# ‘记忆权标’属性 -- 用来保存用户的id
+	it { should respond_to(:remember_token) }
 	# 验证‘authenticate’方法是否存在
 	# ‘authenticate’方法是用来验证用户密码的
 	it { should respond_to(:authenticate) } 
@@ -133,12 +143,14 @@ describe User do
 		it { should_not be_valid }
 	end
 
-	# 验证 password_confirmation 的值不能是nil
+=begin
+	# 验证 password_confirmation 的值不能是nil(该情况很少会出现)
 	#（原因：如果确认密码的值是nil的话，rails将不会进行一致性验证）
 	describe "when password confirmation is nil" do
 		before { @user.password_confirmation = nil }
 		it { should_not be_valid }
 	end
+=end
 
 	# password 长度不能小于6位数
 	describe "with a password that's too short" do
@@ -148,8 +160,9 @@ describe User do
 
 	# 【用户身份的验证】通过email和password来取回用户对象
 	# 先将user信息插入数据库中
-	# 用email,找到数据库中的user信息
-	# 用password,将找到的信息与原来的信息进行比较
+	# 用'email'找到数据库中的user信息
+	# 用'password'去比较找到的user信息中的密码
+	# 注：password比较的是被加密后的安全密码【解释如下】
 	describe "return value of authenticate method" do
 
 		before { @user.save }
@@ -158,7 +171,10 @@ describe User do
 		let(:found_user) { User.find_by_email(@user.email) }
 
 		describe "with valid password" do
-			# 调用'authenticate'方法，
+			# 调用'has_secure_password'中的'authenticate'方法
+			# 将需要验证的password作为参数传进去
+			# ‘authenticate’会将该password进行加密处理，
+			# 然后再将其与找到的user中的加密密码进行对比
 			# 如果参数正确，则返回user用户对象
 			# 如果参数不正确，则返回false
 			it { should == found_user.authenticate(@user.password) }
@@ -171,7 +187,13 @@ describe User do
 		end
 	end
 
+	# 验证合法的非空记忆权标
+	describe "remember token" do
 
+		before { @user.save }
 
+		# 仅验证'remember_token'属性是否为非空
+		its(:remember_token){ should_not be_blank }
+	end
 
 end
