@@ -1,0 +1,39 @@
+<% provide(:title, "Edit user") %>
+
+<h1>Update your profile</h1>
+
+<div class="row">
+
+ 	 <div class="span6 offset3">
+
+ 	 	<!-- form_for 完整的形式如下：-->
+		<!-- form_for(@user, url: user_path(@user), method: :put) -->
+
+		<%= form_for(@user) do |f| %>
+
+			<!-- 显示错误提示信息
+			（注：必须创建相同路径下的文件或文件夹才能匹配到）-->
+			<%= render 'shared/error_messages' %>
+
+			<!-- 'label' 默认将首字母大写显示：Name -->
+			<%= f.label :name %>
+			<%= f.text_field :name %> 
+
+			<%= f.label :email %>
+			<%= f.text_field :email %> 
+
+			<%= f.label :password %>
+			<%= f.password_field :password %>
+		
+			<!-- 'label' 将默认显示的'Password_confirmation'
+			                           改成了'Confirmation' -->
+			<%= f.label :password_confirmation, "Confirmation" %>
+			<%= f.password_field :password_confirmation %>
+		
+			<%= f.submit "Save changes", class: "btn btn-large btn-primary" %>
+		<% end %>
+
+		<%= gravatar_for @user %>
+		<a href = "http://gravatar.com/emails">change</a>
+  	</div>
+</div>

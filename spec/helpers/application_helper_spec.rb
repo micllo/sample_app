@@ -1,3 +1,5 @@
+# 【测试 app/helper/application.rb 页面】
+
 require 'spec_helper'
 
 describe "ApplicationHelper" do

@@ -1,0 +1,12 @@
+<% provide(:title, 'All users') %>
+<h1>All users</h1>
+
+<!--使用分页标记，划分需要分页的内容-->
+<%= will_paginate %>
+
+<ul class = "users">
+   <!--代码重构：直接把'@users'数组变量传递给render，然后在'_user.html.erb'中使用-->
+   <%= render @users %>
+</ul>
+
+<%= will_paginate %>

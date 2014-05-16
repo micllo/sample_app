@@ -11,8 +11,21 @@ gem 'bootstrap-sass', '2.0.4'
 # 使用Hash函数bcrypt对密码进行不可逆的加密，来得到密码的Hash值
 gem 'bcrypt-ruby', '3.0.1'  
 
-# 可提供自动处理数据库迁移等操作（如果把Heroku当做实际生产环境）
+# 可提供自动处理数据库迁移等操作
+#（如果把Heroku当做实际生产环境）
 gem 'kumade'
+
+# 可通过Rake任务来创建示例用户
+#（即：自动生成大量的user用户，而不需要自己手动注册生成）
+# 在数据库中生成示例用户的Rake任务
+# 这个Rake任务保存在'lib/tasks'中（创建'sample_data.rake'文件）
+gem 'faker', '1.0.1'
+
+# 实现分页功能
+gem 'will_paginate', '3.0.3'
+# 设置'will_paginate'使用'bootstrap'中的分页样式
+gem 'bootstrap-will_paginate', '0.0.6'
+
 
 group :development, :test do
 	gem 'sqlite3', '1.3.5'       # 'sqlite3'数据库

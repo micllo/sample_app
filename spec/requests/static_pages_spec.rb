@@ -1,7 +1,8 @@
+#【静态页面测试】
 
-# 测试路由设置
-# 测试相应标记中文本的验证
-# 测试链接是否指向正确的页面
+# 1.验证路由设置
+# 2.验证相应标记中的文本内容
+# 3.验证链接是否指向正确的页面
 
 
 require 'spec_helper'
@@ -11,6 +12,7 @@ describe "Static pages" do
 	subject { page }
 
 	# 将所有相同的验证方法存放入共享模块中
+	# 验证标记内容
 	shared_examples_for "all_static_pages" do
 		it { should have_selector('h1', text: header) }
 		it { should have_selector('title', text: full_title(page_title)) }
@@ -20,11 +22,11 @@ describe "Static pages" do
 		# 会先于it执行，‘it’代码块会默认调用它（针对路由设置的测试）
 		before { visit root_path }
 
+ 		# 验证title和h1标记中的内容
 		# 设置共享模块中参数的Hash值
+		# 调用共享模块中的验证方法		
 		let(:header) { 'Welcomg to the Sample' }
 		let(:page_title) { '' }
-
-		# 调用共享模块中的验证方法（ 一个 it 代表一个 测试用例 ）
 		it_should_behave_like "all_static_pages"
 
 		# 验证title标记中的内容是否没有出现‘| Home’
@@ -55,7 +57,6 @@ describe "Static pages" do
 
 		let(:header){ 'Help' }
 		let(:page_title){ 'Help' }
-
 		it_should_behave_like "all_static_pages"
 =begin
 
@@ -69,7 +70,6 @@ describe "Static pages" do
 
 		let(:header){ 'About Us' }
 		let(:page_title){ 'About Us' }
-
 		it_should_behave_like "all_static_pages"
 	end
 
@@ -78,11 +78,10 @@ describe "Static pages" do
 
 		let(:header){ 'Contact' }
 		let(:page_title){ 'Contact' }
-
 		it_should_behave_like "all_static_pages"
 	end
 
-	# 测试链接是否指向了正确的页面
+	# 3.验证链接是否指向了正确的页面
 	it "should have the right links to the layout" do
 		# 访问首页
 		visit root_path
