@@ -80,6 +80,10 @@ describe "User" do
 	it { should respond_to(:admin) }
 
 
+	# 验证admin属性是不可访问的
+
+
+
 	# 2.验证各属性的合法操作（有效性验证）
 	it { should be_valid }
 

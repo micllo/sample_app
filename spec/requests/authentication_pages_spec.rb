@@ -30,6 +30,7 @@
 #   1）用户登陆后，进入其他用户的编辑页面，'title'不应该显示'Edit user'(不应该进入编辑页面)
 #   2）用户登录后，直接发送其他用户的提交表单的http请求(PUT)，是否会跳转至首页
 # 4.验证登录的非管理员不可以删除其他用户（防止黑客直接使用'DELETE'请求进行恶意删除）
+# 5.验证登录的管理员不可以删除自己
 
 
 
@@ -181,9 +182,36 @@ describe "Authentication" do
             before { delete user_path(user) }
             specify { response.should redirect_to(root_path) }
          end
-
       end
 
+      # 5.验证登录的管理员不可以删除自己
+      describe "as admin user" do
+         let(:admin) { FactoryGirl.create(:admin) }
+         before { sign_in admin }
+
+         describe "submitting a DELETE request to destroy self" do
+            before { delete user_path(admin) }
+            specify { response.should redirect_to(root_path) }
+         end
+      end
+   end
+
+
+   # 验证已经登录的用户，不需要再访问'new'和'create'动作了
+   describe "the signined user" do
+
+      let(:user) { FactoryGirl.create(:user) }
+      before { sign_in user }
+
+      describe "no necessary to visit User#new action" do
+         before { visit signup_path }
+         it { should have_selector('h1', text: 'Welcome ') }
+      end
+
+      describe "no necessary to visit User#create action" do
+         before { post users_path }
+         specify { response.should redirect_to(root_path) }
+      end
    end
 
 end

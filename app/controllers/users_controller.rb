@@ -11,15 +11,16 @@
 #   第二步：成功登录后，应该直接进入用户编辑页面，而不是用户展示页面 
 # 3.登录的当前用户不能编辑其他用户
 # 4.登录的非管理员不可以删除其他用户
+# 5.登录的管理员不可以删除自己
 
 
 class UsersController < ApplicationController
 
     # 在执行'action'之前需要先执行的方法
-    before_filter :signed_in_user, only: [:index, :edit, :update, :destroy]
+    before_filter :signed_in_user,  only: [:index, :edit, :update, :destroy]
     before_filter :if_current_user, only: [:edit, :update]
-    before_filter :admin_user, only: :destroy
-
+    before_filter :admin_user,      only: [:destroy]
+    before_filter :have_signed,     only: [:new, :create]
 
     #【显示用户列表】（分页显示）
     # 'paginate'方法返回的是'ActiveRecord::Relation'类对象
@@ -38,9 +39,7 @@ class UsersController < ApplicationController
     # 注册成功后直接登录（将user的remember_token存入cookie）
     def create
       	@user = User.new(params[:user])
-
     	if @user.save
-
           sign_in @user
   		    flash[:success] = "Welcome to the Sample App!"
   		    # 页面重定向至 'UsersControll#show'
@@ -81,23 +80,34 @@ class UsersController < ApplicationController
     #【删除用户】
     # （只有以管理员身份登录后，才能删除其他用户）
     def destroy
-      User.find(params[:id]).destroy
-      flash[:success] = "User destroy"
-      redirect_to users_path
+      user = User.find(params[:id])
+      # 判断删除的用户是否为管理员自己
+      if user.admin?
+        redirect_to root_path
+      else
+         user.destroy
+         flash[:success] = "User destroy"
+         redirect_to users_path
+      end
     end
 
 
     #【注意】私有方法一定要放在最下面
     private 
+
       # 判断用户是否已登录
-      # 如果未登录：
-      # 1.保存当前的url请求地址
-      # 2.跳转到登陆页面
+      # 目的：记住未登录的用户访问的url，并跳转至登录页
       def signed_in_user
          unless signed_in?
             store_location
             redirect_to signin_path, notice: "Please sign in." 
          end
+      end
+
+      # 判断用户是否已登录
+      # 目的：已登录的用户访问'new'或'create'时直接跳转至首页
+      def have_signed
+        redirect_to root_path if signed_in?
       end
 
       # 判断进入编辑页面的是否为当前用户
@@ -109,6 +119,5 @@ class UsersController < ApplicationController
       # 判断当前用户是否为管理员
       def admin_user
         redirect_to(root_path) unless current_user.admin?
-
       end
 end

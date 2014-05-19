@@ -27,19 +27,19 @@ gem 'will_paginate', '3.0.3'
 gem 'bootstrap-will_paginate', '0.0.6'
 
 
+group :development do
+	gem 'sqlite3', '1.3.5'   # 'sqlite3'数据库
+	
+	# 注解套件（可以自动设定在模型文件总加入一些注释）
+	gem 'annotate', '2.5.0'  
+end
+
+
 group :development, :test do
-	gem 'sqlite3', '1.3.5'       # 'sqlite3'数据库
 	gem 'rspec-rails', '2.11.0'  # 'RSpec'测试框架编写testcase
 	gem 'guard-rspec', '1.2.1'   # 'guard'测试套件
 	gem 'guard-spork', '1.2.0'   # ’Spork‘加速测试的gem
 	gem 'spork', '0.9.2'         # ’Spork‘加速测试的gem
-
-	# 注解套件（可以自动设定在模型文件总加入一些注释）
-	gem 'annotate', '2.5.0'  
-	
-	# 'RSpec'测试中使用的预构件
-	#（创建模型，生成ActiveRecord对象，取代model中的User.create方法）
-	gem 'factory_girl_rails', '4.1.0' 
 end
 
 group :assets do
@@ -56,6 +56,10 @@ group :test do
 	# 'Cucumber'支持行为驱动开发的自动化测试工具
 	gem 'cucumber-rails', '1.2.1', require: false
 	gem 'database_cleaner', '0.7.0'
+	
+	# 'RSpec'测试中使用的预构件
+	#（创建模型，生成ActiveRecord对象，取代model中的User.create方法）
+	gem 'factory_girl_rails', '4.1.0' 
 
 	# 下面两个gem都是基于’guard‘测试套件所需的gem
 	gem 'rb-fsevent', '0.9.1', :require => false 
@@ -64,6 +68,7 @@ end
 
 group :production do   
 	gem 'pg', '0.12.2'   # 'PostgreSQL'数据库
+	gem 'rails_12factor', '0.0.2'
 end
 
 
