@@ -17,4 +17,11 @@ FactoryGirl.define do
 	    	admin true
 	    end
 	end
+
+	# 生成'micropost'微博的预构件（并关联'user'用户对象）
+	factory :micropost do
+		content "Lorem ipsum"
+		user
+	end
+
 end

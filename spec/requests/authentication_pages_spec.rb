@@ -31,7 +31,7 @@
 #   2）用户登录后，直接发送其他用户的提交表单的http请求(PUT)，是否会跳转至首页
 # 4.验证登录的非管理员不可以删除其他用户（防止黑客直接使用'DELETE'请求进行恶意删除）
 # 5.验证登录的管理员不可以删除自己
-
+# 6.验证未登录情况下不能创建和删除微博
 
 
 require 'spec_helper'
@@ -98,6 +98,11 @@ describe "Authentication" do
 
    #【用户权限验证】
    #（针对：'edit'、'update'、'index'）
+   # 1.验证必须登录后，才能编辑用户资料和访问用户列表页面
+   # 2.更友好的转向
+   # 3.验证登录的当前用户不能编辑其他用户的资料
+   # 4.验证登录的非管理员不可以删除其他用户
+   # 5.验证登录的管理员不可以删除自己
    describe "authentication" do
 
       # 1.验证必须登录后，才能编辑用户资料和访问用户列表页面
@@ -147,6 +152,27 @@ describe "Authentication" do
                end
             end
          end
+
+         # 6.验证未登录情况下不能创建和删除微博
+         describe "in the Microposts controller" do
+
+            describe "submitting to the create action" do
+               before { post microposts_path }
+               specify { response.should redirect_to(signin_path) }
+            end
+
+            describe "submitting to the destroy action" do
+               before { delete micropost_path(FactoryGirl.create(:micropost)) }
+               specify { response.should redirect_to(signin_path) }
+            end
+
+         end
+
+
+
+
+
+
       end
 
        # 3.验证登录的当前用户不能编辑其他用户的资料
@@ -197,7 +223,7 @@ describe "Authentication" do
    end
 
 
-   # 验证已经登录的用户，不需要再访问'new'和'create'动作了
+   # 验证已经登录的用户，不需要再访问'new'和'create'动作了(即：注册)
    describe "the signined user" do
 
       let(:user) { FactoryGirl.create(:user) }
@@ -205,7 +231,7 @@ describe "Authentication" do
 
       describe "no necessary to visit User#new action" do
          before { visit signup_path }
-         it { should have_selector('h1', text: 'Welcome ') }
+         it { should have_selector('title', text: 'Ruby on Rails Tutorial Sample App') }
       end
 
       describe "no necessary to visit User#create action" do

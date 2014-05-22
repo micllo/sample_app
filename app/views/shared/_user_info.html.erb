@@ -1,0 +1,18 @@
+<a href = "<%= user_path(current_user) %>">
+	<%= gravatar_for current_user, size: 52 %>
+</a>
+<h1>
+	<%= current_user.name %>
+</h1>
+
+<span>
+	<%= link_to "view my profile", current_user %>
+</span>
+<span>
+	<!-- 'pluralize'第一个参数设置错误的数量，第二个参数设置需要显示的文字
+			 该脚本会根据第一个参数的数量，来正确显示第二个参数的单复数形式 -->
+	<%= pluralize(current_user.microposts.count, "micropost") %>
+</span>
+
+
+

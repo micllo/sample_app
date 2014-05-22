@@ -1,7 +1,7 @@
 #【注册用户】
-#【展示用户】
+#【展示用户】（微博分页显示）
 #【编辑用户】
-#【显示用户列表】（分页显示）
+#【显示用户列表】（用户分页显示）
 #【删除用户】（只有以管理员身份登录后，才能删除其他用户）
 
 #【用户权限的限制】
@@ -17,12 +17,14 @@
 class UsersController < ApplicationController
 
     # 在执行'action'之前需要先执行的方法
+    # 注：'signed_in_user'方法在'sessions_helper'中
     before_filter :signed_in_user,  only: [:index, :edit, :update, :destroy]
     before_filter :if_current_user, only: [:edit, :update]
     before_filter :admin_user,      only: [:destroy]
     before_filter :have_signed,     only: [:new, :create]
 
-    #【显示用户列表】（分页显示）
+    #【显示用户列表】（用户分页显示）
+    # 需要将使用分页的'@users'对象传递给'index'页面
     # 'paginate'方法返回的是'ActiveRecord::Relation'类对象
     # 'params[:page]'默认为30个
     def index
@@ -52,9 +54,12 @@ class UsersController < ApplicationController
     end
 
 
-    # 【展示用户】
+    #【展示用户】(微博分页显示)
+    # 需要将使用分页功能的'@microposts'对象传递给'show'页面
+    # 用法同'index'方法
     def show
        @user = User.find(params[:id])
+       @microposts = @user.microposts.paginate(page: params[:page])
     end
 
 
@@ -94,15 +99,6 @@ class UsersController < ApplicationController
 
     #【注意】私有方法一定要放在最下面
     private 
-
-      # 判断用户是否已登录
-      # 目的：记住未登录的用户访问的url，并跳转至登录页
-      def signed_in_user
-         unless signed_in?
-            store_location
-            redirect_to signin_path, notice: "Please sign in." 
-         end
-      end
 
       # 判断用户是否已登录
       # 目的：已登录的用户访问'new'或'create'时直接跳转至首页

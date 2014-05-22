@@ -1,4 +1,10 @@
 
+# 因为'Helper'（app/helpers）函数只能在view中使用
+# 所以需要引入一下，才能同时在controller中使用
+# include SessionsHelper
+
+# ***********************************************
+
 # 注：从controller传递参数到view中显示时，一般只能默认传递一个（即：@user）
 #    如果希望传递两个参数到view的话，就需要用到‘helper’
 #    而这里的@current_user是不能直接从controller直接传递到view的
@@ -34,6 +40,14 @@ module SessionsHelper
 		! current_user.nil?  
 	end
 
+    # 判断用户是否已登录
+    # 目的：记住未登录的用户访问的url，并跳转至登录页
+    def signed_in_user
+        unless signed_in?
+           store_location
+           redirect_to signin_path, notice: "Please sign in." 
+        end
+    end
 
 	# 可写入当前的user属性
 	def current_user= (user)

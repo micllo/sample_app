@@ -12,20 +12,20 @@
 #  admin           :boolean          default(FALSE)
 #
 
-#【数据模型测试】
+#【'user'数据模型测试】
 
-# 1.验证user数据模型中是否存在相应的属性（存在性验证）
+# 1.验证user数据模型中是否存在相应的属性和方法（存在性验证）
 
-# 2.验证各属性的合法操作（有效性验证）
+# 2.验证各属性的输入值是否合法（有效性验证）
 
 # 3.验证'admin'属性
 #   1)'admin'属性是无效的
 #   2)将'admin'属性设置为有效
 
 # 4.验证各属性的非法操作（无效性验证）
-# 	1）name为空
-# 	2）email为空
-# 	3）name的长度验证（假设长度限制为50个字符）（长度验证）
+# 	1）name不能为空
+# 	2）email不能为空
+# 	3）name的长度不能超过50个字符（长度验证）
 # 	4）email无效的格式验证（格式验证）
 # 	5）email有效的格式验证（格式验证）
 # 	6）email的唯一性验证（唯一性验证）
@@ -33,7 +33,7 @@
 #    （2）防止连续重复的提交，导致相同的email地址被注册两次的情况：
 #        1）需要在数据层添加一个唯一性的索引
 #        2）需要在email存入数据库之前，把email转换成小写
-# 	7）password为空
+# 	7）password不能为空
 # 	8）password和password_confirmation不一致
 # 	9）password长度不能小于6位数
 # 	10）验证记忆权标是否会自动创建
@@ -51,7 +51,9 @@
 # 注意：数据库中添加的’password_digest‘字段，就代替了‘password’和‘password_confirmation’这两个字段
 
 
-
+#【用户发微博】
+# 1.验证用户发布微博的时间排序是否正确
+# 2.验证删除用户后，该用户所发布的微博是否也被删除了
 
 require 'spec_helper'
 
@@ -68,8 +70,10 @@ describe "User" do
 	# 将user模型设置为默认的测试对象
 	subject { @user }
 
-	# 1.验证user数据模型中是否存在相应的属性（存在性验证）
-	# ‘authenticate’方法是否存在
+	# 1.验证user数据模型中是否存在相应的属性和方法（存在性验证）
+	#   ‘authenticate’方法是否存在
+	#   'microposts'方法是否存在(已关联)
+	#   'feed'方法是否存在
 	it { should respond_to(:name) }
 	it { should respond_to(:email) }
 	it { should respond_to(:password_digest) }
@@ -77,14 +81,16 @@ describe "User" do
 	it { should respond_to(:password_confirmation) }
 	it { should respond_to(:remember_token) }
 	it { should respond_to(:authenticate) } 
-	it { should respond_to(:admin) }
+	it { should respond_to(:admin) }	
+	it { should respond_to(:microposts) }
+	it { should respond_to(:feed) }
 
 
 	# 验证admin属性是不可访问的
 
 
 
-	# 2.验证各属性的合法操作（有效性验证）
+	# 2.验证各属性的输入值是否合法（有效性验证）
 	it { should be_valid }
 
 	# 3.验证'admin'属性
@@ -98,9 +104,9 @@ describe "User" do
 
 
 	# 4.验证各属性的非法操作（无效性验证）
-	# 	1）name为空
-	# 	2）email为空
-	# 	3）name的长度验证（假设长度限制为50个字符）（长度验证）
+	# 	1）name不能为空
+	# 	2）email不能为空
+	# 	3）name的长度不能超过50个字符（长度验证）
 	# 	4）email无效的格式验证（格式验证）
 	# 	5）email有效的格式验证（格式验证）
 	# 	6）email的唯一性验证（唯一性验证）
@@ -108,7 +114,7 @@ describe "User" do
 	#    （2）防止连续重复的提交，导致相同的email地址被注册两次的情况：
 	#        1）需要在数据层添加一个唯一性的索引
 	#        2）需要在email存入数据库之前，把email转换成小写
-	# 	7）password为空
+	# 	7）password不能为空
 	# 	8）password和password_confirmation不一致
 	# 	9）password长度不能小于6位数
 	describe "when name is not present" do
@@ -219,5 +225,71 @@ describe "User" do
 			specify { user_for_invalid_password.should be_false }
 		end
 	end
+
+
+	#【用户发微博】
+	# 1.验证用户发布微博的时间排序是否正确
+	# 2.验证删除用户后，该用户所发布的微博是否也被删除了
+	describe "micropost associations" do
+
+		before { @user.save }
+
+		#【let!】强制相应的变量立即被创建
+		let!(:older_micropost) do
+			FactoryGirl.create(:micropost, user: @user, created_at: 1.day.ago)
+		end
+
+		let!(:newer_micropost) do
+			FactoryGirl.create(:micropost, user: @user, created_at: 1.hour.ago)
+		end
+		
+		# 1.验证用户发布微博的时间排序是否正确
+		# （即：返回的micropost数组中最新发布的在最前面）
+		it "should have the right micropost in the right order" do
+			@user.microposts.should == [ newer_micropost, older_micropost ]
+		end 	
+
+		# 2.验证删除用户后，该用户所发布的微博是否也被删除了
+		#  （使用'dup'目的：使被赋值的数组对象是全新的，而不是与原来的引用同一个地址）
+		it "should destroy associated microposts" do
+			microposts = @user.microposts.dup
+			@user.destroy
+			microposts.should_not be_empty
+			microposts.each do |micropost|
+				Micropost.find_by_id(micropost.id).should be_nil
+			end
+		end
+
+		# 验证'feed'方法返回的值，只包含当前用户发布的微博
+		describe "status" do
+
+			let!(:another_micropost) do
+				FactoryGirl.create(:micropost, user: FactoryGirl.create(:user))
+			end
+
+			its(:feed) { should include(older_micropost) }
+			its(:feed) { should include(newer_micropost) }
+			its(:feed) { should_not include(another_micropost) }
+		end
+
+	end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 end

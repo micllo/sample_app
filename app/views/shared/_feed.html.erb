@@ -1,0 +1,13 @@
+
+<% if @feed_items.any? %>
+
+	<ol class = "microposts">
+
+		<!-- 通过使用'collection'参数传递'@feed_items', 使被传递页面可以直接使用'feed_item'变量
+			 即：当前已经定义了循环操作，后续只要调用其中默认指定的'feed_item'变量即可 -->
+		<%= render partial: 'shared/feed_item', collection: @feed_items %>
+	</ol>
+
+	<%= will_paginate @feed_items %>
+
+<% end %>

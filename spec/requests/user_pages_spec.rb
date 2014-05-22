@@ -8,13 +8,15 @@
 #  2.当有多个'describe'平级时，执行'describe'的顺序是随机的
 #  3.当'describe'和'it'是平级时，总是先执行'it'，再执行'describe'
 
+#【'let' 和'let!'的区别】
+# 'let'指定的变量是“惰性”的，只有当后续引用时才会被创建
+# 'let!'则可以强制相应的变量立即被创建
+
 # *********************************************************************
 
 #【用户页面测试】
 
 #【注册页面的标记验证】
-
-#【profile页面的标记验证】
 
 #【注册功能验证】
 # 1.验证注册失败后，数据库中的记录数量是否没有改变
@@ -48,9 +50,10 @@
 #   3）管理员不能看到自己的删除链接
 #   4）管理员可以成功删除其他用户
 
-
-
-
+#【用户发布微博】
+# 1.验证用户资料页是否显示了微博内容
+# 	1）验证用户资料页是否统计了该用户的微博数量
+#   2）验证用户资料页是否显示了该用户发布的微博内容
 
 
 require 'spec_helper'
@@ -77,21 +80,6 @@ describe "User Pages" do
 		before { visit signup_path }
 		let(:h1) { 'Sign up' }
 		let(:title) { 'Sign up' }
-
-		it_should_behave_like "h1_title"
-	end
-
-
-	#【profile页面的标记验证】
-	# 调用共享模块中的验证方法
-	describe "profile page" do
-
-		# 调用Factory中定义的user数据模型(在sped/factories.rb中)
-		let(:user) { FactoryGirl.create(:user) }
-		before { visit user_path(user) }
- 		
-		let(:h1) { user.name }
-		let(:title) { user.name }
 
 		it_should_behave_like "h1_title"
 	end
@@ -300,5 +288,57 @@ describe "User Pages" do
 			end
 		end
 	end
+
+	#【用户发布微博】
+	# 1.验证用户资料页是否显示了微博内容
+	# 	1）验证用户资料页是否统计了该用户的微博数量
+	#   2）验证用户资料页是否显示了该用户发布的微博内容
+	describe "profile page" do
+
+		let(:user) { FactoryGirl.create(:user) }
+		let!(:m1)  { FactoryGirl.create(:micropost, user: user, content: "Foo") }
+		let!(:m2)  { FactoryGirl.create(:micropost, user: user, content: "Bar") }
+
+		before { visit user_path(user) } 
+
+		let(:h1)    { user.name }
+		let(:title) { user.name }
+
+		# 验证profile页面标记(调用共享模块中的验证方法)
+		it_should_behave_like "h1_title"
+
+		describe "microposts" do
+		    it { should have_content(user.microposts.count) }
+		 	it { should have_content(m1.content) }
+		 	it { should have_content(m2.content) }
+		end
+
+	end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 end

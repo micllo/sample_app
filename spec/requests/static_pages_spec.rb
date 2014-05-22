@@ -4,6 +4,7 @@
 # 2.验证相应标记中的文本内容
 # 3.验证链接是否指向正确的页面
 
+# 验证首页是否显示当前用户的微博列表
 
 require 'spec_helper'
 
@@ -19,38 +20,40 @@ describe "Static pages" do
 	end
 
 	describe "Home page" do
+
 		# 会先于it执行，‘it’代码块会默认调用它（针对路由设置的测试）
-		before { visit root_path }
+		before { visit root_path } 
 
  		# 验证title和h1标记中的内容
 		# 设置共享模块中参数的Hash值
 		# 调用共享模块中的验证方法		
-		let(:header) { 'Welcomg to the Sample' }
+		let(:header) { 'Welcome to the Sample' }
 		let(:page_title) { '' }
 		it_should_behave_like "all_static_pages"
 
 		# 验证title标记中的内容是否没有出现‘| Home’
 		it { should_not have_selector('title', text: '| Home') }
 
-=begin
-		# 验证h1标记中的内容是否是‘Sample App’
-		it { should have_selector('h1', text:'Welcomg to the Sample' ) }
 
-		# 验证title标记中的内容是否为‘Ruby on Rails ...’
-		it { should have_selector('title',text: full_title('')) }
+		# 验证首页是否显示当前用户的微博列表
+		describe "for signed-in users" do
 
-		# 验证title标记中的内容是否没有出现‘| Home’
-		it { should_not have_selector('title', text: '| Home') }
+			let(:user) { FactoryGirl.create(:user) }
+			before do
+				FactoryGirl.create(:micropost, user: user, content: "Lorem ipsum")
+				FactoryGirl.create(:micropost, user: user, content: "Dolor sit amet")
+				sign_in user
+				visit root_path
+			end
 
-
-		# 简化之前的代码 -- 验证title标记
-		it "shoud have the h1 'Welcomg to the Sample'" do
-			visit root_path
-			page.should have_selector('title', text: "Welcomg to the Sample")
+			it "should render the user's feed" do
+				user.feed.each do |item|
+					should have_selector("li##{item.id}", text: item.content)
+				end
+			end
 		end
-=end
-
 	end
+
 
 	describe "Help page" do
 		before { visit help_path }

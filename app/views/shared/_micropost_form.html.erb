@@ -1,0 +1,15 @@
+
+<!-- form_for 完整的形式如下：-->
+<!--form_for(@micropost, url: microposts_path, method: :post) -->
+
+<%= form_for(@micropost) do |f| %>
+
+	<!-- 'f'通过'object'来获取当前对象@micropost，传递给局部视图 -->
+	<%= render 'shared/error_messages', object: f.object %> 
+
+	<div class="field">
+		<%= f.text_area :content, placeholder: "Compose new micropost..." %>
+	</div>
+
+	<%= f.submit "Post", class: "btn btn-large btn-primary" %> 
+<% end %>

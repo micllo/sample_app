@@ -1,14 +1,40 @@
 
-<div class = "center hero-unit">
-	<h1>Welcome to the Sample</h1>
+<!-- 登录的用户显示用户信息，并可以发布微博
+	 未登录的用户，只能显示首页的注册按钮 -->
 
-	<h2>
-    This is the home page for the
-    <a href="http://railstutorial.org/">Ruby on Rails Tutorial</a>
-    sample application.
-	</h2>
+<% if signed_in? %>
 
-	<%= link_to "Sign up now !", signup_path, class: "btn btn-large btn-primary" %>
-</div>
+	<div class = "row">
 
-<%= link_to image_tag("rails.png", alt: "Rails"), 'http://rubyonrails.org/' %>
+		<!-- 显示用户信息和发微博表单 -->
+		<aside class = "span4">
+			<section>
+				<%= render 'shared/user_info' %>
+			</section>
+			<section>
+				<%= render 'shared/micropost_form' %>
+			</section>
+		</aside>
+
+		<!-- 显示当前用户的微博 -->
+		<div class = "span8">
+			<h3>Micropost Feed</h3>
+			<%= render 'shared/feed' %>
+		</div>	
+	</div>
+
+<% else %>
+	<div class = "center hero-unit">
+		<h1>Welcome to the Sample</h1>
+
+		<h2>
+    	This is the home page for the
+    	<a href="http://railstutorial.org/">Ruby on Rails Tutorial</a>
+    	sample application.
+		</h2>
+
+		<%= link_to "Sign up now !", signup_path, class: "btn btn-large btn-primary" %>
+	</div>
+
+	<%= link_to image_tag("rails.png", alt: "Rails"), 'http://rubyonrails.org/' %>
+<% end %>
