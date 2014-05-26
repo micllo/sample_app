@@ -1,6 +1,6 @@
 
 #【创建一条微博】
-#【删除一条微博】（只用当前用户可以删除自己微博）
+#【删除一条微博】（只有当前用户可以删除自己微博）
 
 class MicropostsController < ApplicationController
 

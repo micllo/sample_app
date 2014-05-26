@@ -4,7 +4,15 @@
 # 2.验证相应标记中的文本内容
 # 3.验证链接是否指向正确的页面
 
-# 验证首页是否显示当前用户的微博列表
+# 【首页的微博验证】
+# 4.验证首页是否显示当前用户的微博列表
+# 5.验证侧边栏中微博数量是否正确显示
+#   1) 两条微博时，显示'2 microposts'
+#   2) 一条微博时，显示'1 micropost'
+# 6.验证微博的分页功能（默认一页30条记录）
+#   1）验证分页标签是否存在
+#   2）验证第一页的30条微博内容是否正确
+
 
 require 'spec_helper'
 
@@ -34,23 +42,62 @@ describe "Static pages" do
 		# 验证title标记中的内容是否没有出现‘| Home’
 		it { should_not have_selector('title', text: '| Home') }
 
-
-		# 验证首页是否显示当前用户的微博列表
+		#【首页的微博验证】
+		# 4.验证首页是否显示当前用户的微博列表
+		# 5.验证侧边栏中微博数量是否正确显示
 		describe "for signed-in users" do
 
 			let(:user) { FactoryGirl.create(:user) }
-			before do
+			before(:each) do
 				FactoryGirl.create(:micropost, user: user, content: "Lorem ipsum")
 				FactoryGirl.create(:micropost, user: user, content: "Dolor sit amet")
 				sign_in user
 				visit root_path
 			end
 
+			# 4.验证首页是否显示当前用户的微博列表
 			it "should render the user's feed" do
 				user.feed.each do |item|
 					should have_selector("li##{item.id}", text: item.content)
 				end
 			end
+
+			# 5.验证侧边栏中微博数量是否正确显示
+			#   1) 两条微博时，显示'2 microposts'
+			#   2) 一条微博时，显示'1 micropost'
+			it "two microposts" do
+				should have_content("2 microposts") 
+			end
+
+			describe "one micropost" do
+				before { click_link "delete" }
+				it { should have_content("1 micropost") }
+			end
+		end
+
+		#【首页微博验证】
+		# 6.验证微博的分页功能（默认一页30条记录）
+		#   1）验证分页标签是否存在
+		#   2）验证第一页的30条微博内容是否正确
+		describe "microposts paginate" do
+
+			let(:user) { FactoryGirl.create(:user) }
+
+			before do 
+				31.times{ FactoryGirl.create(:micropost, user: user) } 
+				sign_in user
+				visit root_path
+			end
+
+			after(:all) { Micropost.delete_all }
+
+			it { should have_selector('div.pagination') }
+			
+			it "should list each micropost" do
+				Micropost.paginate(page: 1).each do |micropost|
+					should have_selector('li', text: micropost.content )
+				end
+			end 
 		end
 	end
 

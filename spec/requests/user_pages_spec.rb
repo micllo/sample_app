@@ -2,6 +2,7 @@
 #【'it'测试方法的原理】
 # 	1.进入'it'时，会先去调用before方法中的内容（可以创建用户数据）
 # 	2.退出'it'时，会自动去完整的清除用户数据（即：数据模型中自动创建的'id'字段也一并清除）
+#   3.关于执行'before'方法的顺序为先近后远，（即：先执行当前层的，再执行外层的）
 
 #【注】
 #  1.当有多个'it'平级时，执行'it'的顺序是随机的
@@ -41,14 +42,14 @@
 
 #【用户列表验证】
 # 1.验证index页面中的标记内容
-# 2.验证分页功能
-#   1）验证是否有分页的标签
-#   2）验证第一页的用户名是否正确
-# 3.验证删除用户功能
+# 2.验证删除用户功能
 # 	1）普通用户不能看到删除链接
 #   2）管理员可以看到删除链接
 #   3）管理员不能看到自己的删除链接
 #   4）管理员可以成功删除其他用户
+# 3.验证用户的分页功能
+#   1）验证是否有分页的标签
+#   2）验证第一页的用户名是否正确
 
 #【用户发布微博】
 # 1.验证用户资料页是否显示了微博内容
@@ -223,9 +224,11 @@ describe "User Pages" do
 
 	#【用户列表验证】
 	# 1.验证index页面中的标记内容
-	# 2.验证分页功能
-	#   1）验证是否有分页的标签
-	#   2）验证第一页的用户名是否正确
+	# 2.验证删除用户功能
+	# 	1）普通用户不能看到删除链接
+	#   2）管理员可以看到删除链接
+	#   3）管理员不能看到自己的删除链接
+	#   4）管理员可以成功删除其他用户
 	describe "index" do
 
 		let(:user){ FactoryGirl.create(:user) }
@@ -239,30 +242,7 @@ describe "User Pages" do
 		it { should have_selector('title', text: "All users") }
 		it { should have_selector('h1', text: "All users") }
 
-
-		# 2.验证分页功能
-		#   1）验证是否有分页的标签
-		#   2）验证第一页默认的30个用户名是否正确
-		describe "pagination" do
-
-			# 在块中所有测试执行前，一次创建30个示例用户
-			# 注意：此时正好有31个用户，所以才会出现翻页控件
-			before(:all){ 30.times{ FactoryGirl.create(:user) } }
-
-			# 在块中所有测试执行后，一次删除所有示例用户
-			#【注】这里不会删除数据模型自动生成的'id'字段的值
-			after(:all){ User.delete_all }
-
-			it { should have_selector('div.pagination') }
-
-			it "should list each user" do
-				User.paginate(page: 1).each do |user|
-					should have_selector('li', text: user.name) 
-				end
-			end
-		end
-
-		# 3.验证删除用户功能
+		# 2.验证删除用户功能
 		# 	1）普通用户不能看到删除链接
 		#   2）管理员可以看到删除链接
 		#   3）管理员不能看到自己的删除链接
@@ -289,6 +269,35 @@ describe "User Pages" do
 		end
 	end
 
+    #【用户列表验证】
+	# 3.验证用户的分页功能
+	#   1）验证是否有分页的标签
+	#   2）验证第一页默认的30个用户名是否正确
+	describe "users paginate" do
+
+		let(:user) { FactoryGirl.create(:user)}
+
+		before do
+			# 在块中所有测试执行前，一次创建30个示例用户
+			30.times{ FactoryGirl.create(:user) }
+			sign_in user
+			visit users_path
+		end
+
+		# 在块中所有测试执行后，一次删除所有示例用户
+		after(:all) { User.delete_all }
+
+		it { should have_selector('div.pagination') }
+
+		it "should list each user" do
+			User.paginate(page: 1).each do |user|
+				should have_selector('li', text: user.name)
+			end
+		end
+
+	end
+
+
 	#【用户发布微博】
 	# 1.验证用户资料页是否显示了微博内容
 	# 	1）验证用户资料页是否统计了该用户的微博数量
@@ -314,24 +323,6 @@ describe "User Pages" do
 		end
 
 	end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

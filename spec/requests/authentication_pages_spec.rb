@@ -32,6 +32,9 @@
 # 4.验证登录的非管理员不可以删除其他用户（防止黑客直接使用'DELETE'请求进行恶意删除）
 # 5.验证登录的管理员不可以删除自己
 # 6.验证未登录情况下不能创建和删除微博
+# 7.验证当前用户不能删除其他用户发布的微博
+#   1）不显示其他用户微博下方的'delete'链接
+#   2）不能通过delete请求进行删除
 
 
 require 'spec_helper'
@@ -152,28 +155,8 @@ describe "Authentication" do
                end
             end
          end
-
-         # 6.验证未登录情况下不能创建和删除微博
-         describe "in the Microposts controller" do
-
-            describe "submitting to the create action" do
-               before { post microposts_path }
-               specify { response.should redirect_to(signin_path) }
-            end
-
-            describe "submitting to the destroy action" do
-               before { delete micropost_path(FactoryGirl.create(:micropost)) }
-               specify { response.should redirect_to(signin_path) }
-            end
-
-         end
-
-
-
-
-
-
       end
+
 
        # 3.验证登录的当前用户不能编辑其他用户的资料
        #   1）用户登陆后，进入其他用户的编辑页面，'title'不应该显示'Edit user'(不应该进入编辑页面)
@@ -218,6 +201,49 @@ describe "Authentication" do
          describe "submitting a DELETE request to destroy self" do
             before { delete user_path(admin) }
             specify { response.should redirect_to(root_path) }
+         end
+      end
+   
+
+      # 6.验证未登录情况下不能创建和删除微博
+      describe "in the Microposts controller" do
+
+         describe "submitting to the create action" do
+            before { post microposts_path }
+            specify { response.should redirect_to(signin_path) }
+         end
+
+         describe "submitting to the destroy action" do
+            before { delete micropost_path(FactoryGirl.create(:micropost)) }
+            specify { response.should redirect_to(signin_path) }
+         end
+      end
+
+
+      # 7.验证当前用户不能删除其他用户发布的微博
+      #   1）不显示其他用户微博下方的'delete'链接
+      #   2）不能通过delete请求进行删除
+      describe "current_user cannot delete other_user's microposts" do
+
+         let(:current_user) { FactoryGirl.create(:user) }
+         let(:other_user) { FactoryGirl.create(:user) }
+
+         let!(:current_user_micropost) { FactoryGirl.create(:micropost, user: current_user) }
+         let!(:other_user_micropost) { FactoryGirl.create(:micropost, user: other_user) }
+
+         before do
+            sign_in current_user 
+            visit user_path(other_user)
+         end
+
+         # 1）不显示其他用户微博下方的'delete'链接
+         it "current_user cannot find other_user's delete link" do
+            should_not have_content("delete") 
+         end
+
+         # 2）不能通过delete请求进行删除
+         it "submitting to DELETE request to the micropost#destroy action" do
+            expect { delete micropost_path(other_user) }.not_to change(Micropost, :count)
          end
       end
    end

@@ -1,0 +1,19 @@
+<div class = "row">
+
+	<!-- 显示用户信息和发微博表单 -->
+	<aside class = "span4">
+		<section>
+			<%= render 'shared/user_info' %>
+		</section>
+		
+		<section>
+			<%= render 'shared/micropost_form' %>
+		</section>
+	</aside>
+
+	<!-- 显示当前用户的微博 -->
+	<div class = "span8">
+		<h3>Micropost Feed</h3>
+		<%= render 'shared/feed' %>
+	</div>	
+</div>
