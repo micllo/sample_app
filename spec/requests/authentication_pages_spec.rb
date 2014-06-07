@@ -31,10 +31,13 @@
 #   2）用户登录后，直接发送其他用户的提交表单的http请求(PUT)，是否会跳转至首页
 # 4.验证登录的非管理员不可以删除其他用户（防止黑客直接使用'DELETE'请求进行恶意删除）
 # 5.验证登录的管理员不可以删除自己
-# 6.验证未登录情况下不能创建和删除微博
-# 7.验证当前用户不能删除其他用户发布的微博
+# 6.验证已经登录的用户，不需要再访问'new'和'create'动作了(即：不用再注册)
+# 7.验证未登录情况下不能创建和删除微博
+# 8.验证当前用户不能删除其他用户发布的微博
 #   1）不显示其他用户微博下方的'delete'链接
 #   2）不能通过delete请求进行删除
+# 9.验证关注列表和粉丝列表页面的访问权限
+# 10.验证未登录用户，不能通过请求直接创建关注或取消关注
 
 
 require 'spec_helper'
@@ -203,9 +206,26 @@ describe "Authentication" do
             specify { response.should redirect_to(root_path) }
          end
       end
-   
 
-      # 6.验证未登录情况下不能创建和删除微博
+      # 6.验证已经登录的用户，不需要再访问'new'和'create'动作了(即：不用再注册)
+      describe "the signined user" do
+
+         let(:user) { FactoryGirl.create(:user) }
+         before { sign_in user }
+
+         describe "no necessary to visit User#new action" do
+            before { visit signup_path }
+            it { should have_selector('title', text: 'Ruby on Rails Tutorial Sample App') }
+         end
+
+         describe "no necessary to visit User#create action" do
+            before { post users_path }
+            specify { response.should redirect_to(root_path) }
+         end
+      end
+
+
+      # 7.验证未登录情况下不能创建和删除微博
       describe "in the Microposts controller" do
 
          describe "submitting to the create action" do
@@ -220,7 +240,7 @@ describe "Authentication" do
       end
 
 
-      # 7.验证当前用户不能删除其他用户发布的微博
+      # 8.验证当前用户不能删除其他用户发布的微博
       #   1）不显示其他用户微博下方的'delete'链接
       #   2）不能通过delete请求进行删除
       describe "current_user cannot delete other_user's microposts" do
@@ -246,24 +266,44 @@ describe "Authentication" do
             expect { delete micropost_path(other_user) }.not_to change(Micropost, :count)
          end
       end
+
+
+      # 9.验证关注列表和粉丝列表页面的访问权限
+      #  （即：未登录直接跳转登录页面）
+      describe "visiting" do
+
+         let(:user) { FactoryGirl.create(:user) }
+
+         describe "the following page" do
+            before { visit following_user_path(user) }
+            it { should have_selector('title', text: 'Sign in') }
+         end
+
+         describe "the followers page" do
+            before { visit followers_user_path(user) }
+            it  { should have_selector('title', text: 'Sign in') }
+         end
+      end
+
+      # 10.验证未登录用户，不能通过请求直接创建关注或取消关注
+      describe "for non-signin user" do
+
+         let(:user) { FactoryGirl.create(:user) }
+
+         describe "submitting the create action in the relationship controller" do
+            before { post relationships_path }
+            specify { response.should redirect_to(signin_path) }
+
+         end
+
+         describe "submitting the destroy action in the relationship controller" do
+            before { delete relationship_path(1) }
+            specify { response.should redirect_to(signin_path) }
+         end
+      end
+
    end
 
 
-   # 验证已经登录的用户，不需要再访问'new'和'create'动作了(即：注册)
-   describe "the signined user" do
-
-      let(:user) { FactoryGirl.create(:user) }
-      before { sign_in user }
-
-      describe "no necessary to visit User#new action" do
-         before { visit signup_path }
-         it { should have_selector('title', text: 'Ruby on Rails Tutorial Sample App') }
-      end
-
-      describe "no necessary to visit User#create action" do
-         before { post users_path }
-         specify { response.should redirect_to(root_path) }
-      end
-   end
 
 end

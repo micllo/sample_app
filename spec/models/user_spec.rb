@@ -54,6 +54,21 @@
 #【用户发微博】
 # 1.验证用户发布微博的时间排序是否正确
 # 2.验证删除用户后，该用户所发布的微博是否也被删除了
+# 3.验证'feed'方法(获取当前用户的微博)返回的值：
+#   1）包含当前用户发布的微博
+#   2）不包含未关注的用户发布的微博
+#   3) 包含关注的用户发布的微博
+
+#【用户关注】
+# 1.验证用户关注功能
+#   1）该用户是否已关注了需要关注的用户
+#   2）该用户的关注用户数组中是否包含需要关注的用户
+# 2.验证取消用户关注功能
+#   1）该用户是否已取消关注了需要关注的用户
+#   2）该用户的关注用户数组中是否不包含需要关注的用户
+# 3.验证被关注者的粉丝是否正确
+#   1）被关注者的粉丝数组中是否包含那个关注他的用户
+
 
 require 'spec_helper'
 
@@ -72,8 +87,12 @@ describe "User" do
 
 	# 1.验证user数据模型中是否存在相应的属性和方法（存在性验证）
 	#   ‘authenticate’方法是否存在
-	#   'microposts'方法是否存在(已关联)
-	#   'feed'方法是否存在
+	#   'microposts'方法是否存在(已关联'has_many')
+	#   'relationships'方法是否存在（已关联'has_many'）
+	#   'followed_users'方法是否存在（已关联'has_many'）
+	#   'reverse_relationship'方法是否存在（已关联'has_many'）
+	#   'followers'方法是否存在（已关联'has_many'）
+	#   'feed、follow!、following、unfollow!'方法是否存在
 	it { should respond_to(:name) }
 	it { should respond_to(:email) }
 	it { should respond_to(:password_digest) }
@@ -84,6 +103,13 @@ describe "User" do
 	it { should respond_to(:admin) }	
 	it { should respond_to(:microposts) }
 	it { should respond_to(:feed) }
+	it { should respond_to(:relationships) }
+	it { should respond_to(:followed_users) }
+	it { should respond_to(:follow!) }
+	it { should respond_to(:following?) }
+	it { should respond_to(:unfollow!) }
+	it { should respond_to(:reverse_relationships) }
+	it { should respond_to(:followers) }
 
 
 	# 验证admin属性是不可访问的
@@ -230,15 +256,19 @@ describe "User" do
 	#【用户发微博】
 	# 1.验证用户发布微博的时间排序是否正确
 	# 2.验证删除用户后，该用户所发布的微博是否也被删除了
+	# 3.验证'feed'方法(获取当前用户的微博)返回的值：
+	#   1）包含当前用户发布的微博
+	#   2）不包含未关注的用户发布的微博
+	#   3) 包含关注的用户发布的微博
 	describe "micropost associations" do
 
 		before { @user.save }
 
 		#【let!】强制相应的变量立即被创建
+		# 创建当前用户发布的两条微博
 		let!(:older_micropost) do
 			FactoryGirl.create(:micropost, user: @user, created_at: 1.day.ago)
 		end
-
 		let!(:newer_micropost) do
 			FactoryGirl.create(:micropost, user: @user, created_at: 1.hour.ago)
 		end
@@ -260,29 +290,77 @@ describe "User" do
 			end
 		end
 
-		# 验证'feed'方法返回的值，只包含当前用户发布的微博
+		# 3.验证'feed'方法(获取当前用户的微博)返回的值：
+		#   1）包含当前用户发布的微博
+		#   2）不包含未关注的用户发布的微博
+		#   3) 包含关注的用户发布的微博
+		#  【注：仅针对User模型的feed方法】
 		describe "status" do
-
-			let!(:another_micropost) do
+			# 创建未关注用户发布的微博
+			let!(:unfollowed_post) do
 				FactoryGirl.create(:micropost, user: FactoryGirl.create(:user))
+			end
+			# 创建已关注的用户
+			let(:followed_user) { FactoryGirl.create(:user) }
+
+			before do
+				@user.follow!(followed_user) 
+				# 创建3个已关注用户发布的微博
+				3.times{ followed_user.microposts.create!(content: "Lorem ipsum") }
 			end
 
 			its(:feed) { should include(older_micropost) }
 			its(:feed) { should include(newer_micropost) }
-			its(:feed) { should_not include(another_micropost) }
+			its(:feed) { should_not include(unfollowed_post) }
+			its(:feed) do
+				followed_user.microposts.each do |followed_post|
+					should include(followed_post)
+				end
+			end
 		end
 
 	end
 
 
+	#【用户关注】
+	# 1.验证用户关注功能
+	#   1）该用户是否已关注了需要关注的用户
+	#   2）该用户的关注用户数组中是否包含需要关注的用户
+	# 2.验证取消用户关注功能
+	#   1）该用户是否已取消关注了需要关注的用户
+	#   2）该用户的关注用户数组中是否不包含需要关注的用户
+	# 3.验证被关注者的粉丝是否正确
+	#   1）被关注者的粉丝数组中是否包含那个关注他的用户
+	describe "following" do
 
+		let(:other_user) { FactoryGirl.create(:user) }
 
+		before do
+			@user.save
+			@user.follow!(other_user)
+		end
 
+		# 1.验证用户关注功能
+		it { should be_following(other_user) }
+		its(:followed_users) { should include(other_user) }
 
+		describe "and unfollowing" do
 
+			before { @user.unfollow!(other_user) }
 
+			# 2.验证取消用户关注功能
+			it { should_not be_following(other_user) }
+			its(:followed_users) { should_not include(other_user) } 
+		end
 
-
+		# 3.验证被关注者的粉丝是否正确
+		#   1）被关注者的粉丝数组中是否包含那个关注他的用户
+		describe "followed user" do
+			# 将'@user'对象转换成'other_user'对象
+			subject { other_user }
+			its(:followers) { should include(@user) }
+		end
+	end
 
 
 

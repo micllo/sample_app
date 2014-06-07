@@ -1,11 +1,13 @@
 <div class = "row">
 
-	<!-- 显示用户信息和发微博表单 -->
+	<!-- 显示:用户信息、统计关注和粉丝数量、发微博表单 -->
 	<aside class = "span4">
 		<section>
 			<%= render 'shared/user_info' %>
 		</section>
-		
+		<section>
+			<%= render 'shared/stats' %>
+		</section>
 		<section>
 			<%= render 'shared/micropost_form' %>
 		</section>

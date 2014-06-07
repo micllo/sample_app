@@ -1,10 +1,22 @@
 SampleApp::Application.routes.draw do
   
-  resources :users
+  # member方法得到的URL地址为：
+  # 'users/1/following' 
+  # 'users/1/followers'
+  # 对应的具名路由为：(类似'new'和'edit')
+  # 'following_user_path(1)'  (用户1的关注列表)
+  # 'followers_user_path(1)' （用户1的粉丝列表）
+  resources :users do
+     member do
+        get :following, :followers
+     end
+  end
 
-  resources :sessions, only: [:new, :create, :destroy]
+  resources :sessions,      only: [:new, :create, :destroy]
 
-  resources :microposts, only: [:create, :destroy]
+  resources :microposts,    only: [:create, :destroy]
+
+  resources :relationships, only: [:create, :destroy]
 
   get "users/new"
 

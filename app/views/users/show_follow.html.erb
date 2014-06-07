@@ -1,0 +1,37 @@
+
+<% provide(:title, @title) %>
+
+<div class = "row">
+	<!-- 显示：当前用户头像、用户名、用户资料链接、微博数量
+			  统计关注和粉丝数量、所关注的用户的头像缩略图列表-->
+	<aside class = "span4">
+		<section>
+			<%= gravatar_for @user %>
+			<h1><%= @user.name %></h1>
+			<span><%= link_to "view my profile", @user %></span>
+			<span><b>Microposts:</b><%= @user.microposts.count %></span>
+		</section>
+		<section>
+			<%= render 'shared/stats' %>
+			<% if @users.any? %>
+				<div class = "user_avatars">
+					<% @users.each do |user| %>
+						<%= link_to gravatar_for(user, size: 30), user %>
+					<% end %>
+				</div>
+			<% end %>
+		</section>
+	</aside>
+
+	<!-- 分页显示：所关注用户的列表(头像和名字) -->
+	<div class = "span8">
+		<h3> <%= @title %> </h3>
+		<% if @users.any? %>
+			<ul class = "users">
+				<%= render @users %>
+			</ul>
+			<%= will_paginate %>
+		<% end %>
+	</div>
+</div>
+

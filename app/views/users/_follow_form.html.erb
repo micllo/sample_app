@@ -1,0 +1,21 @@
+<!-- 
+ 【前提条件】
+  1.当前用户不能关注自己
+  2.不能重复关注同一个用户
+
+ 【判断条件】 
+  1.这个用户资料是否为当前用户 
+  2.当前用户是否已关注过该用户 
+-->
+
+<% unless current_user?(@user) %>
+	<div id = "follow_form">
+		<% if current_user.following?(@user) %>
+			<%= render 'unfollow' %>
+		<% else%>
+			<%= render 'follow' %>
+		<% end %>
+   	</div>
+<% end %>
+
+

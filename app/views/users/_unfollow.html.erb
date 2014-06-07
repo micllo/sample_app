@@ -1,0 +1,22 @@
+<!-- 
+	取消关注用户按钮 
+	1.找到一个关注的关系
+	2.传递给destroy的action
+    3.'current_user.relationships.find_by_followed_id(@user.id)'
+  	   返回的是当前用户所关注的当前用户资料页的用户的id
+  	4.'remote: true'表示：使用Ajax异步请求
+-->
+
+<%= form_for(current_user.relationships.find_by_followed_id(@user.id), html: { method: :delete }, remote: true) do |f| %>
+
+	<%= f.submit "Unfollow", class: "btn btn-large" %>
+
+<% end %>
+
+
+
+
+
+
+
+

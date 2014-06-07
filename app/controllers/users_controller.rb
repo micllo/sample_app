@@ -3,6 +3,8 @@
 #【编辑用户】
 #【显示用户列表】（用户分页显示）
 #【删除用户】（只有以管理员身份登录后，才能删除其他用户）
+#【展示关注列表】
+#【展示粉丝列表】
 
 #【用户权限的限制】
 # 1.必须登录后才能编辑用户
@@ -18,7 +20,7 @@ class UsersController < ApplicationController
 
     # 在执行'action'之前需要先执行的方法
     # 注：'signed_in_user'方法在'sessions_helper'中
-    before_filter :signed_in_user,  only: [:index, :edit, :update, :destroy]
+    before_filter :signed_in_user,  only: [:index, :edit, :update, :destroy, :following, :followers]
     before_filter :if_current_user, only: [:edit, :update]
     before_filter :admin_user,      only: [:destroy]
     before_filter :have_signed,     only: [:new, :create]
@@ -95,6 +97,23 @@ class UsersController < ApplicationController
          redirect_to users_path
       end
     end
+
+    #【展示关注列表】
+    def following
+      @title = "Following"
+      @user = User.find(params[:id])
+      @users = @user.followed_users.paginate(page: params[:page])
+      render 'show_follow'
+    end
+
+    #【展示粉丝列表】
+    def followers
+      @title = "Followers"
+      @user = User.find(params[:id])
+      @users = @user.followers.paginate(page: params[:page])
+      render 'show_follow'
+    end
+
 
 
     #【注意】私有方法一定要放在最下面

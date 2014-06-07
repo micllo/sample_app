@@ -27,3 +27,6 @@ RSpec::Matchers.define :have_success_message do |message|
 		page.should have_selector('div.alert.alert-success', text: message) 
 	end
 end
+
+
+

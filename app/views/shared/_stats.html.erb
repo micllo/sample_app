@@ -1,0 +1,23 @@
+
+<!-- 
+	如果从controller传过来的@user存在，则直接使用它
+	如果不存在，则使用当前用户
+ -->
+<% @user ||= current_user %>
+
+<!-- 统计关注和粉丝数量 -->
+<div class = "stats">
+	<a href = "<%= following_user_path(@user) %>" >
+		<strong id = "following" class = "stat">
+			<%= @user.followed_users.count %>
+		</strong>
+		following
+	</a>
+
+	<a href = "<%= followers_user_path(@user) %>">
+		<strong id = "followers" class = "stat">
+			<%= @user.followers.count %>
+		</strong>
+		followers
+	</a>
+</div>

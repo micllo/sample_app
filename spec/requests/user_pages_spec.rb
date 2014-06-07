@@ -2,7 +2,7 @@
 #【'it'测试方法的原理】
 # 	1.进入'it'时，会先去调用before方法中的内容（可以创建用户数据）
 # 	2.退出'it'时，会自动去完整的清除用户数据（即：数据模型中自动创建的'id'字段也一并清除）
-#   3.关于执行'before'方法的顺序为先近后远，（即：先执行当前层的，再执行外层的）
+#   3.关于执行'before'方法的顺序为先执行最外层，然后逐次向内执行
 
 #【注】
 #  1.当有多个'it'平级时，执行'it'的顺序是随机的
@@ -56,6 +56,19 @@
 # 	1）验证用户资料页是否统计了该用户的微博数量
 #   2）验证用户资料页是否显示了该用户发布的微博内容
 
+#【关注列表和粉丝列表验证】
+# 1.验证关注列表页面内容
+# 2.验证粉丝列表页面内容
+
+#【关注和取消关注按钮的验证】
+# 1.关注按钮验证
+#   1）验证当前用户的关注用户数是否增加了
+#   2）验证被关注者的粉丝数是否增加了
+#   3）验证按钮的“关注”是否变成了“取消关注”
+# 2.取消关注按钮验证
+#   1）验证当前用户的关注用户数是否减少了
+#   2）验证被关注用户的粉丝数是否减少了
+#   3）验证按钮的“取消关注”是否变成了“关注”
 
 require 'spec_helper'
 
@@ -321,9 +334,98 @@ describe "User Pages" do
 		 	it { should have_content(m1.content) }
 		 	it { should have_content(m2.content) }
 		end
-
 	end
 
+
+	#【关注列表和粉丝列表验证】
+	# 1.验证关注列表页面内容
+	# 2.验证粉丝列表页面内容
+	describe "following/followers page" do
+
+		let(:user) { FactoryGirl.create(:user) }
+		let(:other_user) { FactoryGirl.create(:user) }
+
+		before { user.follow!(other_user) }
+
+		# 1.验证关注列表页面内容
+		describe "followed users" do
+			before do 
+				sign_in user
+				visit following_user_path(user)
+			end
+			it { should have_selector('title', text: full_title('Following')) }
+			it { should have_selector('h3', text:'Following') }
+			it { should have_link(other_user.name, href: user_path(other_user)) }
+		end
+
+		# 2.验证粉丝列表页面内容
+		describe "followers" do
+			before do
+				sign_in other_user
+				visit followers_user_path(other_user)
+			end
+			it { should have_selector('title', text: full_title('Followers')) }
+			it { should have_selector('h3', text: 'Followers') }
+			it { should have_link(user.name, href: user_path(user)) }
+		end
+	end
+
+
+	#【关注和取消关注按钮的验证】
+	# 1.关注按钮验证
+	#   1）验证当前用户的关注用户数是否增加了
+	#   2）验证被关注者的粉丝数是否增加了
+	#   3）验证按钮的“关注”是否变成了“取消关注”
+	# 2.取消关注按钮验证
+	#   1）验证当前用户的关注用户数是否减少了
+	#   2）验证被关注用户的粉丝数是否减少了
+	#   3）验证按钮的“取消关注”是否变成了“关注”
+	describe "following/followers button" do
+
+		let(:user) { FactoryGirl.create(:user) }
+		let(:other_user) { FactoryGirl.create(:user) }
+		before { sign_in user}
+
+		describe "follow button" do
+
+			before { visit user_path(other_user) }
+
+			it "should increment the followed users count" do
+				expect { click_button "Follow" }.to change(user.followed_users, :count).by(1)
+			end
+
+			it "should increment the followers count" do
+				expect { click_button "Follow" }.to change(other_user.followers, :count).by(1)
+			end
+
+			describe "follow change to unfollow" do
+				before { click_button "Follow" }
+				it { should have_selector('input', value: 'Unfollow') }
+			end
+		end
+
+		describe "unfollow button" do
+
+			before do
+				user.follow!(other_user)
+				visit user_path(other_user)
+			end
+
+			it "should decrement the followed users count" do
+				expect { click_button "Unfollow" }.to change(user.followed_users, :count).by(-1)
+			end
+
+			it "should decrement the followers count" do
+				expect { click_button "Unfollow" }.to change(other_user.followers, :count).by(-1)
+			end
+
+			describe "unfollow change to follow" do
+				before { click_button "Unfollow" }
+				it { should have_selector('input',  value: "Follow") }
+			end
+		end
+
+	end
 
 
 

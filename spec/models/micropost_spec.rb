@@ -11,9 +11,9 @@
 
 #【'micropost'数据模型测试】
 
-#.1.验证各个属性是否存在（存在性验证）
+# 1.验证各个属性是否存在（存在性验证）
 # 2.验证各属性的输入值是否合法（有效性验证）
-# 3,验证使用'micropost'中的'user_id'属性创建微博时，是否会抛出异常
+# 3.验证'user_id'该属性是不可访问的（出于安全考虑）
 # 4.验证各属性的非法操作（无效性验证）
 
 
@@ -31,7 +31,8 @@ describe "Micropost" do
 	# 1.验证各个属性是否存在（存在性验证）
 	it { should respond_to(:content) }
 	it { should respond_to(:user_id) }
-	# 测试微博对象是否可以响应用户方法
+	
+	# 测试微博对象是否可以响应用户方法('belong_to'关系)
 	it { should respond_to(:user) }
 	its(:user) { should == user }
   
@@ -39,8 +40,9 @@ describe "Micropost" do
 	it { should be_valid }
 
 
-	# 3.验证使用'micropost'中的'user_id'属性创建微博时，是否会抛出异常
-    #（由于安全起见'micropost'中的'user_id'属性设为不可访问）
+	# 3.验证'user_id'该属性是不可访问的（出于安全考虑）
+	# 即：只能通过'user.microposts.build()'的方法来创建微博
+	#    而直接使用'micropost'中的'user_id'属性创建微博时，是否会抛出异常
 	describe "accessible attributes" do
 		it "should not allow access to user_id" do
 			expect do
