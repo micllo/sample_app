@@ -36,7 +36,7 @@ end
 
 
 group :development, :test do
-	gem 'rspec-rails', '2.11.0'  # 'RSpec'测试框架编写testcase
+	gem 'rspec-rails', '2.14.0'  # 'RSpec'测试框架编写testcase
 	gem 'guard-rspec', '1.2.1'   # 'guard'测试套件
 	gem 'guard-spork', '1.2.0'   # ’Spork‘加速测试的gem
 	gem 'spork', '0.9.2'         # ’Spork‘加速测试的gem
