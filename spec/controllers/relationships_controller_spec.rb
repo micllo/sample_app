@@ -1,5 +1,4 @@
 
-
 #【控制器测试】
 #（针对'elationship'控制器对'Ajax'请求的响应）
 
@@ -9,7 +8,6 @@
 # 2.验证取消关注的Ajax操作
 #   1）通过Ajax取消关注后，relationship表是否会减少一条记录
 #   2）通过Ajax取消关注后，响应是否成功
-
 
 
 require 'spec_helper'
@@ -71,17 +69,5 @@ describe RelationshipsController do
 	end
 
 end
-
-
-
-
-
-
-
-
-
-
-
-
 
 

@@ -42,8 +42,6 @@
 #   1）先将user信息插入数据库中
 #   2）用'email'找到数据库中的user信息
 #   3）用'password'去比较找到的user信息中的密码
-
-
 # 用户身份验证：【数据层】
 # 目的：就是为了规避安全隐患，因为数据库中存入的密码是经过加密处理的（使得任何人都无法识别）
 # 方法：调用'has_secure_password'中的'authenticate'方法，传入用户提交的密码作为参数，
@@ -361,13 +359,5 @@ describe "User" do
 			its(:followers) { should include(@user) }
 		end
 	end
-
-
-
-
-
-
-
-
 
 end

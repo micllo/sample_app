@@ -1,3 +1,5 @@
+# encoding:utf-8
+
 #【静态页面测试】
 
 # 1.验证相应标记中的文本内容
@@ -169,6 +171,7 @@ describe "Static pages" do
 		it { should have_link('1 followers', href: followers_user_path(user)) }
 
 	end
+
 
 
 end

@@ -15,6 +15,9 @@
 # 2.验证各属性的输入值是否合法（有效性验证）
 # 3.验证'user_id'该属性是不可访问的（出于安全考虑）
 # 4.验证各属性的非法操作（无效性验证）
+#   1）用户ID不能为空
+#   2）微博内容不能为空
+#   3）微博长度不能超过140个字符（长度验证）
 
 
 require 'spec_helper'
@@ -69,13 +72,5 @@ describe "Micropost" do
 		before { @micropost.content = "a" * 141 }
 		it  { should_not be_valid }
 	end
-
-
-
-
-
-
-
-
 
 end

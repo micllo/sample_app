@@ -301,9 +301,5 @@ describe "Authentication" do
             specify { response.should redirect_to(signin_path) }
          end
       end
-
    end
-
-
-
 end
