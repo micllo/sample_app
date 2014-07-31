@@ -130,7 +130,7 @@ describe "Authentication" do
             # 2）未登录情况下直发送接提交表单的http请求(PUT)，是否会跳转到登录页面
             describe "submitting to the update action" do
                before { put user_path(user) }
-               specify { response.should redirect_to(signin_path) }
+               specify { expect(response).to redirect_to(signin_path) }
             end
 
             # 3）未登录情况下直接访问用户列表，是否会跳转到登录页面
@@ -177,7 +177,7 @@ describe "Authentication" do
 
          describe "submitting to PUT request to the Users#update action" do
             before { put user_path(wrong_user) }
-            specify { response.should redirect_to(root_path) }
+            specify { expect(response).to redirect_to(root_path) }
          end
       end
 
@@ -192,7 +192,7 @@ describe "Authentication" do
 
          describe "submitting a DELETE request to the Users#destroy action" do
             before { delete user_path(user) }
-            specify { response.should redirect_to(root_path) }
+            specify { expect(response).to redirect_to(root_path) }
          end
       end
 
@@ -203,7 +203,7 @@ describe "Authentication" do
 
          describe "submitting a DELETE request to destroy self" do
             before { delete user_path(admin) }
-            specify { response.should redirect_to(root_path) }
+            specify { expect(response).to redirect_to(root_path) }
          end
       end
 
@@ -220,7 +220,7 @@ describe "Authentication" do
 
          describe "no necessary to visit User#create action" do
             before { post users_path }
-            specify { response.should redirect_to(root_path) }
+            specify { expect(response).to redirect_to(root_path) }
          end
       end
 
@@ -230,12 +230,12 @@ describe "Authentication" do
 
          describe "submitting to the create action" do
             before { post microposts_path }
-            specify { response.should redirect_to(signin_path) }
+            specify { expect(response).to redirect_to(signin_path) }
          end
 
          describe "submitting to the destroy action" do
             before { delete micropost_path(FactoryGirl.create(:micropost)) }
-            specify { response.should redirect_to(signin_path) }
+            specify { expect(response).to redirect_to(signin_path) }
          end
       end
 
@@ -292,13 +292,13 @@ describe "Authentication" do
 
          describe "submitting the create action in the relationship controller" do
             before { post relationships_path }
-            specify { response.should redirect_to(signin_path) }
+            specify { expect(response).to redirect_to(signin_path) }
 
          end
 
          describe "submitting the destroy action in the relationship controller" do
             before { delete relationship_path(1) }
-            specify { response.should redirect_to(signin_path) }
+            specify { expect(response).to redirect_to(signin_path) }
          end
       end
    end

@@ -229,8 +229,8 @@ describe "User Pages" do
 			it { should have_selector('title', text: new_name) }
 			it { should have_selector('div.alert.alert-success') }
 			it { should have_link('Sign out', href: signout_path) }
-			specify { user.reload.name.should == new_name }
-			specify { user.reload.email.should == new_email }
+			specify { expect(user.reload.name).to eq(new_name) }
+			specify { expect(user.reload.email).to eq(new_email) }
 		end
 	end
 

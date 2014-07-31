@@ -67,21 +67,21 @@ describe "Static pages" do
 
 		# 点击 About 链接（进入about页面进行验证）
 		click_link "About"
-		page.should have_selector('title', text: "About Us")
+		expect(page).to have_selector('title', text: "About Us")
 
 		click_link "Help"
-		page.should have_selector('title', text: "Help")
+		expect(page).to have_selector('title', text: "Help")
 
 		click_link "Contact"
-		page.should have_selector('title', text: "Contact")
+		expect(page).to have_selector('title', text: "Contact")
 
 		click_link "Home"
 
 		click_link "Sign up now !"
-		page.should have_selector('title', text: "Sign up")
+		expect(page).to have_selector('title', text: "Sign up")
 
 		click_link "Home"
-		page.should have_selector('title', text: "Ruby on Rails Tutorial Sample App")
+		expect(page).to have_selector('title', text: "Ruby on Rails Tutorial Sample App")
 	end
 
 	describe "Home page" do

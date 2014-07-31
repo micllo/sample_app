@@ -29,8 +29,16 @@ describe "Relationship" do
 	# 1.测试微博对象是否可以响应用户方法('belong_to'关系)
 	it { should respond_to(:follower) }
 	it { should respond_to(:followed) }
-	its(:follower) { should == follower }
-	its(:followed) { should == followed }
+
+	describe '#follower' do
+	  subject { super().follower }
+	  it { should == follower }
+	end
+
+	describe '#followed' do
+	  subject { super().followed }
+	  it { should == followed }
+	end
 
 	# 2.验证各属性的输入值是否合法（有效性验证）
 	it { should be_valid } 

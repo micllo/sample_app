@@ -161,7 +161,7 @@ describe "User" do
 			addresses = %w[user@foo,com user_at_foo.org example.user@foo.foo@bar_baz.com foo@bar+baz.com]
 			addresses.each do |invalid_address| 
 				@user.email = invalid_address 
-				@user.should_not be_valid
+				expect(@user).not_to be_valid
 		    end 
 		end
 	end
@@ -171,7 +171,7 @@ describe "User" do
 			addresses = %w[user@foo.COM A_US-ER@f.b.org frst.lst@foo.jp a+b@baz.cn] 
 			addresses.each do |valid_address|
 				@user.email = valid_address
-				@user.should be_valid 
+				expect(@user).to be_valid 
 			end
 		end 
 	end
@@ -218,7 +218,11 @@ describe "User" do
 		before { @user.save }
 
 		# 仅验证'remember_token'属性是否为非空
-		its(:remember_token){ should_not be_blank }
+
+		describe '#remember_token' do
+		  subject { super().remember_token }
+		  it { should_not be_blank }
+		end
 	end
 
 
@@ -246,7 +250,7 @@ describe "User" do
 		describe "with invalid password" do
 			let(:user_for_invalid_password) { found_user.authenticate("invalid") }
 			it { should_not == user_for_invalid_password }
-			specify { user_for_invalid_password.should be_false }
+			specify { expect(user_for_invalid_password).to be_false }
 		end
 	end
 
@@ -274,7 +278,7 @@ describe "User" do
 		# 1.验证用户发布微博的时间排序是否正确
 		# （即：返回的micropost数组中最新发布的在最前面）
 		it "should have the right micropost in the right order" do
-			@user.microposts.should == [ newer_micropost, older_micropost ]
+			expect(@user.microposts).to eq([ newer_micropost, older_micropost ])
 		end 	
 
 		# 2.验证删除用户后，该用户所发布的微博是否也被删除了
@@ -282,9 +286,9 @@ describe "User" do
 		it "should destroy associated microposts" do
 			microposts = @user.microposts.dup
 			@user.destroy
-			microposts.should_not be_empty
+			expect(microposts).not_to be_empty
 			microposts.each do |micropost|
-				Micropost.find_by_id(micropost.id).should be_nil
+				expect(Micropost.find_by_id(micropost.id)).to be_nil
 			end
 		end
 
@@ -307,13 +311,28 @@ describe "User" do
 				3.times{ followed_user.microposts.create!(content: "Lorem ipsum") }
 			end
 
-			its(:feed) { should include(older_micropost) }
-			its(:feed) { should include(newer_micropost) }
-			its(:feed) { should_not include(unfollowed_post) }
-			its(:feed) do
+			describe '#feed' do
+			  subject { super().feed }
+			  it { should include(older_micropost) }
+			end
+
+			describe '#feed' do
+			  subject { super().feed }
+			  it { should include(newer_micropost) }
+			end
+
+			describe '#feed' do
+			  subject { super().feed }
+			  it { should_not include(unfollowed_post) }
+			end
+
+			describe '#feed' do
+			  subject { super().feed }
+			  it do
 				followed_user.microposts.each do |followed_post|
 					should include(followed_post)
 				end
+			end
 			end
 		end
 
@@ -340,7 +359,11 @@ describe "User" do
 
 		# 1.验证用户关注功能
 		it { should be_following(other_user) }
-		its(:followed_users) { should include(other_user) }
+
+		describe '#followed_users' do
+		  subject { super().followed_users }
+		  it { should include(other_user) }
+		end
 
 		describe "and unfollowing" do
 
@@ -348,7 +371,11 @@ describe "User" do
 
 			# 2.验证取消用户关注功能
 			it { should_not be_following(other_user) }
-			its(:followed_users) { should_not include(other_user) } 
+
+			describe '#followed_users' do
+			  subject { super().followed_users }
+			  it { should_not include(other_user) }
+			end 
 		end
 
 		# 3.验证被关注者的粉丝是否正确
@@ -356,7 +383,11 @@ describe "User" do
 		describe "followed user" do
 			# 将'@user'对象转换成'other_user'对象
 			subject { other_user }
-			its(:followers) { should include(@user) }
+
+			describe '#followers' do
+			  subject { super().followers }
+			  it { should include(@user) }
+			end
 		end
 	end
 

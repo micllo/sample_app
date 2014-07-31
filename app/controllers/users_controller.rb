@@ -20,7 +20,7 @@ class UsersController < ApplicationController
 
     # 在执行'action'之前需要先执行的方法
     # 注：'signed_in_user'方法在'sessions_helper'中
-    before_filter :signed_in_user,  only: [:index, :edit, :update, :destroy, :following, :followers]
+    before_filter :signed_in_user,  only: [:index, :edit, :show, :update, :destroy, :following, :followers]
     before_filter :if_current_user, only: [:edit, :update]
     before_filter :admin_user,      only: [:destroy]
     before_filter :have_signed,     only: [:new, :create]
