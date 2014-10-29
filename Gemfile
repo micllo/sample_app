@@ -57,7 +57,7 @@ group :test do
 	gem 'cucumber-rails', '1.2.1', require: false
 	gem 'database_cleaner', '0.7.0'
 	
-	# 'RSpec'测试中使用的预构件
+	# 测试数据构造器（Test Data Builder）
 	#（创建模型，生成ActiveRecord对象，取代model中的User.create方法）
 	gem 'factory_girl_rails', '4.1.0' 
 

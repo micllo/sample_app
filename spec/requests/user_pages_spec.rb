@@ -70,6 +70,7 @@
 #   2）验证被关注用户的粉丝数是否减少了
 #   3）验证按钮的“取消关注”是否变成了“关注”
 
+# encoding:utf-8
 require 'spec_helper'
 
 describe "User Pages" do
@@ -321,10 +322,14 @@ describe "User Pages" do
 		let!(:m1)  { FactoryGirl.create(:micropost, user: user, content: "Foo") }
 		let!(:m2)  { FactoryGirl.create(:micropost, user: user, content: "Bar") }
 
-		before { visit user_path(user) } 
+		before do
+			sign_in user
+			visit user_path(user) 
+		end
 
 		let(:h1)    { user.name }
 		let(:title) { user.name }
+
 
 		# 验证profile页面标记(调用共享模块中的验证方法)
 		it_should_behave_like "h1_title"

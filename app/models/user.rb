@@ -44,8 +44,8 @@ class User < ActiveRecord::Base
   
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
   validates :email, presence: true, 
-  					format: { with: VALID_EMAIL_REGEX }, 
-  					uniqueness: { case_sensitive: false }
+  					        format: { with: VALID_EMAIL_REGEX }, 
+  					        uniqueness: { case_sensitive: false }
   # validates :password_confirmation, presence: true 
   # 注：为了使注册页面的报错提示信息显示的更合理
   # (即：将’Password_digest can't be blank‘改成’Password can't be blank‘

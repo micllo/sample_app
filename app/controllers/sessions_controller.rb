@@ -11,12 +11,10 @@
 #（清除cookie中的remember_token）
 
 
-
 class SessionsController < ApplicationController
 
 	#【用户登录】
 	def new
-
 	end
 
 	#【用户登录】
