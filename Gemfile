@@ -1,5 +1,11 @@
 source 'https://rubygems.org'
 
+gem 'json', '1.5.5'
+
+gem 'nokogiri', '1.6.1'
+
+gem 'ffi', '1.9.5'
+
 gem 'rails', '3.2.13'
 
 gem 'jquery-rails', '2.0.2'
